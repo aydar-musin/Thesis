@@ -1,3 +1,5 @@
+The production and recognition of emotions in speech: features and algorithms. Pierre-Yves Oudeyer (http://www.pyoudeyer.com/emotionsIJHCS.pdf)
+
 http://habrahabr.ru/company/croc/blog/235565/
 http://speetech.by/press/analytics/6
 http://www.emotionlabs.ru/content/66/

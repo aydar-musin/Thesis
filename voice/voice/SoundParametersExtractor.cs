@@ -40,6 +40,7 @@ namespace voice
                 OnDataAvailable(reader.WaveFormat.BlockAlign, args);
                 readed = reader.Read(buffer, 0, 35000);
             }
+
             return Results;
         }
 

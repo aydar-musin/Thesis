@@ -3,6 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "voice", "voice\voice.csproj", "{699F4AE9-2239-4112-9911-AE2973196BD7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmotionalEstimation", "EmotionalEstimation\EmotionalEstimation.csproj", "{D2E56D1E-721B-435D-93AE-EA65E41CFCCB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -13,6 +15,10 @@ Global
 		{699F4AE9-2239-4112-9911-AE2973196BD7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{699F4AE9-2239-4112-9911-AE2973196BD7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{699F4AE9-2239-4112-9911-AE2973196BD7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D2E56D1E-721B-435D-93AE-EA65E41CFCCB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D2E56D1E-721B-435D-93AE-EA65E41CFCCB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D2E56D1E-721B-435D-93AE-EA65E41CFCCB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D2E56D1E-721B-435D-93AE-EA65E41CFCCB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

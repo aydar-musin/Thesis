@@ -16,6 +16,7 @@ namespace EmotionalEstimation
             s_info.WindowStyle = ProcessWindowStyle.Minimized;
             s_info.WorkingDirectory = Environment.CurrentDirectory;
             s_info.CreateNoWindow = true;
+
             Process.Start(s_info);
         }
         public static void Stop()

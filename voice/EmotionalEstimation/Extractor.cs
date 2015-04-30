@@ -17,8 +17,10 @@ namespace EmotionalEstimation
             PraatManager.Start();
             PraatManager.Execute(string.Format("\"runScript: \\\"{0}\\\", {1}, {2}, \\\"{3}\\\", {4}\"", @"C:\praatfiles\words.praat", "50", "1", file, "0.3"));
             PraatManager.Stop();
-            if(!File.Exists(@"C:\praatfiles\results.txt"))
-                throw new Exception("Не удалось выполнить анализ файла");
+            if (!File.Exists(@"C:\praatfiles\results.txt"))
+            {
+                return new SoundCharacteristics() { Phrases = new List<PhraseValues>() };
+            }
 
             var resultLines = File.ReadAllLines(@"C:\praatfiles\results.txt");
 
@@ -30,36 +32,36 @@ namespace EmotionalEstimation
                 foreach (var value in values)
                 {
                     var numbers = value.Split('/');
-                    float pitch = (float)Convert.ToDouble(numbers[0].Replace('.', ','));
-                    float intensity = (float)Convert.ToDouble(numbers[1].Replace('.', ','));
+                    double pitch = Convert.ToDouble(numbers[0].Replace('.', ','));
+                    double intensity = Convert.ToDouble(numbers[1].Replace('.', ','));
 
-                    if (pitch > 0)
-                    {
+                    //if (pitch > 0)    //splitting to words
+                    //{
                         phrase.Pitch.Add(pitch);
                         phrase.Intensity.Add(intensity);
-                    }
+                    //}
                 }
                 phrases.Add(phrase);
                 
             }
             File.Delete(@"C:\praatfiles\results.txt");
             
-            float sumInt = 0;
-            float sumPitch = 0;
-            float minInt=10000;
-            float maxInt=0;
-            float minPitch=100000;
-            float maxPitch=0;
+            double sumInt = 0;
+            double sumPitch = 0;
+            double minInt=10000;
+            double maxInt=0;
+            double minPitch=100000;
+            double maxPitch=0;
 
             foreach (var phrase in phrases)
             {
                 sumInt += phrase.Intensity.Average();
                 sumPitch += phrase.Pitch.Average();
 
-                float min=phrase.Intensity.Min();//Intensity ranges
+                double min=phrase.Intensity.Min();//Intensity ranges
                 if(min<minInt)
                     minInt=min;
-                float max=phrase.Intensity.Max();
+                double max=phrase.Intensity.Max();
                 if(max>maxInt)
                     maxInt=max;
 
@@ -85,20 +87,20 @@ namespace EmotionalEstimation
     class SoundCharacteristics
     {
         public List<PhraseValues> Phrases;
-        public float AveragePitch;
-        public float AverageIntensity;
-        public float RangePitch;
-        public float RangeIntensity;
+        public double AveragePitch;
+        public double AverageIntensity;
+        public double RangePitch;
+        public double RangeIntensity;
     }
     class PhraseValues
     {
-        public List<float> Intensity;
-        public List<float> Pitch;
+        public List<double> Intensity;
+        public List<double> Pitch;
 
         public PhraseValues()
         {
-            Intensity = new List<float>();
-            Pitch = new List<float>();
+            Intensity = new List<double>();
+            Pitch = new List<double>();
         }
     }
 }

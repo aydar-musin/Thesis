@@ -1,4 +1,6 @@
 ﻿using System.Drawing;
+using System.Windows.Forms.DataVisualization.Charting;
+
 namespace EmotionalEstimation
 {
     partial class Form1
@@ -40,7 +42,6 @@ namespace EmotionalEstimation
             this.selectFileButton = new System.Windows.Forms.Button();
             this.infoLabel = new System.Windows.Forms.Label();
             this.chart1 = new System.Windows.Forms.DataVisualization.Charting.Chart();
-            this.phraseslistBox = new System.Windows.Forms.ListBox();
             this.chart2 = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.button1 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.chart1)).BeginInit();
@@ -60,7 +61,7 @@ namespace EmotionalEstimation
             // infoLabel
             // 
             this.infoLabel.AutoSize = true;
-            this.infoLabel.Location = new System.Drawing.Point(93, 17);
+            this.infoLabel.Location = new System.Drawing.Point(12, 67);
             this.infoLabel.Name = "infoLabel";
             this.infoLabel.Size = new System.Drawing.Size(16, 13);
             this.infoLabel.TabIndex = 1;
@@ -68,7 +69,8 @@ namespace EmotionalEstimation
             // 
             // chart1
             // 
-            this.chart1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.chart1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             chartArea1.Name = "ChartArea1";
             this.chart1.ChartAreas.Add(chartArea1);
             this.chart1.Enabled = false;
@@ -76,29 +78,20 @@ namespace EmotionalEstimation
             legend2.Name = "Legend1";
             this.chart1.Legends.Add(legend1);
             this.chart1.Legends.Add(legend2);
-            this.chart1.Location = new System.Drawing.Point(350, 17);
+            this.chart1.Location = new System.Drawing.Point(115, 17);
             this.chart1.Name = "chart1";
             series1.ChartArea = "ChartArea1";
             series1.Legend = "Legend1";
             series1.Name = "Series1";
             this.chart1.Series.Add(series1);
-            this.chart1.Size = new System.Drawing.Size(390, 160);
+            this.chart1.Size = new System.Drawing.Size(625, 160);
             this.chart1.TabIndex = 2;
             this.chart1.Text = "chart1";
             // 
-            // phraseslistBox
-            // 
-            this.phraseslistBox.Enabled = false;
-            this.phraseslistBox.FormattingEnabled = true;
-            this.phraseslistBox.Location = new System.Drawing.Point(224, 17);
-            this.phraseslistBox.Name = "phraseslistBox";
-            this.phraseslistBox.Size = new System.Drawing.Size(120, 329);
-            this.phraseslistBox.TabIndex = 3;
-            this.phraseslistBox.SelectedIndexChanged += new System.EventHandler(this.phraseslistBox_SelectedIndexChanged);
-            // 
             // chart2
             // 
-            this.chart2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.chart2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             chartArea2.Name = "ChartArea1";
             this.chart2.ChartAreas.Add(chartArea2);
             this.chart2.Enabled = false;
@@ -106,13 +99,13 @@ namespace EmotionalEstimation
             legend4.Name = "Legend1";
             this.chart2.Legends.Add(legend3);
             this.chart2.Legends.Add(legend4);
-            this.chart2.Location = new System.Drawing.Point(350, 183);
+            this.chart2.Location = new System.Drawing.Point(115, 183);
             this.chart2.Name = "chart2";
             series2.ChartArea = "ChartArea1";
             series2.Legend = "Legend1";
             series2.Name = "Series1";
             this.chart2.Series.Add(series2);
-            this.chart2.Size = new System.Drawing.Size(390, 160);
+            this.chart2.Size = new System.Drawing.Size(625, 160);
             this.chart2.TabIndex = 4;
             this.chart2.Text = "chart2";
             // 
@@ -133,7 +126,6 @@ namespace EmotionalEstimation
             this.ClientSize = new System.Drawing.Size(752, 367);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.chart2);
-            this.Controls.Add(this.phraseslistBox);
             this.Controls.Add(this.chart1);
             this.Controls.Add(this.infoLabel);
             this.Controls.Add(this.selectFileButton);
@@ -151,7 +143,6 @@ namespace EmotionalEstimation
         private System.Windows.Forms.Button selectFileButton;
         private System.Windows.Forms.Label infoLabel;
         private System.Windows.Forms.DataVisualization.Charting.Chart chart1;
-        private System.Windows.Forms.ListBox phraseslistBox;
         private System.Windows.Forms.DataVisualization.Charting.Chart chart2;
         private System.Windows.Forms.Button button1;
     }

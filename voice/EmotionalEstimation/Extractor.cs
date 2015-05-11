@@ -12,41 +12,89 @@ namespace EmotionalEstimation
     {
         public SoundCharacteristics ExtractValues(string file)
         {
-            List<PhraseValues> phrases = new List<PhraseValues>();
+            ProcessStartInfo si = new ProcessStartInfo();
+            si.FileName = "praat/praatcon.exe";
 
-            PraatManager.Start();
-            PraatManager.Execute(string.Format("\"runScript: \\\"{0}\\\", {1}, {2}, \\\"{3}\\\", {4}\"", @"C:\praatfiles\words.praat", "50", "1", file, "0.3"));
-            PraatManager.Stop();
-            if (!File.Exists(@"C:\praatfiles\results.txt"))
+            si.RedirectStandardOutput = true;
+            si.WindowStyle = ProcessWindowStyle.Hidden;
+            si.UseShellExecute = false;
+            si.CreateNoWindow = true;
+
+            si.Arguments = @"-a C:\praatfiles\words.praat " + file;
+
+            Process process = new Process();
+            process.StartInfo = si;
+            process.Start();
+            string resultLine = process.StandardOutput.ReadToEnd();
+
+            SoundCharacteristics result=new SoundCharacteristics();
+
+            if (resultLine.StartsWith("Error"))
+                throw new Exception("Ошибка обработки файла!");
+            else
             {
-                return new SoundCharacteristics() { Phrases = new List<PhraseValues>() };
-            }
 
-            var resultLines = File.ReadAllLines(@"C:\praatfiles\results.txt");
+                var values = resultLine.Trim().Split(' ');
 
-            foreach (var line in resultLines)
-            {
-                PhraseValues phrase = new PhraseValues();
+                int start=0;
+                int end=0;
 
-                var values = line.Trim().Split(' ');
                 foreach (var value in values)
                 {
                     var numbers = value.Split('/');
                     double pitch = Convert.ToDouble(numbers[0].Replace('.', ','));
                     double intensity = Convert.ToDouble(numbers[1].Replace('.', ','));
 
-                    //if (pitch > 0)    //splitting to words
-                    //{
-                        phrase.Pitch.Add(pitch);
-                        phrase.Intensity.Add(intensity);
-                    //}
+                    if (pitch > 0)
+                    {
+                        result.PitchValues.Add(pitch);
+                        result.IntensityValues.Add(intensity);
+                        end++;
+                    }
+                    else
+                    {
+                        if(end>start)
+                        {
+                            result.Phrases.Add(new Phrase(){ Start=start, End=end});
+                            start=end;
+                        }
+                        result.PitchValues.Add(0);
+                        result.IntensityValues.Add(0);
+                        start++;
+                        end=start;
+                    }
                 }
-                phrases.Add(phrase);
-                
+                result.RangePitch = result.PitchValues.Max() - result.PitchValues.Where(p => p > 0).Min();
+                result.RangeIntensity = result.IntensityValues.Max() - result.IntensityValues.Where(p => p > 0).Min();
+                result.AverageIntensity = result.IntensityValues.Average();
+                result.AveragePitch = result.PitchValues.Average();
+
+
+                List<Phrase> phrases=new List<Phrase>();
+                bool lastIsMerged=false;
+
+                for (int i = 0; i < result.Phrases.Count - 1; i++)
+                {
+                    if ((result.Phrases[i + 1].Start-result.Phrases[i].End) < 5)
+                    {
+                        if (lastIsMerged)
+                            phrases.Last().End = result.Phrases[i + 1].End;
+                        else
+                            phrases.Add(new Phrase() { Start = result.Phrases[i].Start, End = result.Phrases[i + 1].End });
+
+                        lastIsMerged = true;
+                    }
+                    else
+                    {
+                        if (!lastIsMerged)
+                            phrases.Add(result.Phrases[i]);
+                        lastIsMerged = false;
+                    }
+                }
+                result.Phrases = phrases;
             }
-            File.Delete(@"C:\praatfiles\results.txt");
             
-            double sumInt = 0;
+            /*double sumInt = 0;
             double sumPitch = 0;
             double minInt=10000;
             double maxInt=0;
@@ -71,36 +119,37 @@ namespace EmotionalEstimation
                 max=phrase.Pitch.Max();
                 if(max>maxPitch)
                     maxPitch=max;
-            }
-
-            SoundCharacteristics result = new SoundCharacteristics();
-            result.Phrases = phrases;
-
-            result.AverageIntensity = sumInt / phrases.Count;
-            result.AveragePitch = sumPitch / phrases.Count;
-            result.RangeIntensity = maxInt - minInt;
-            result.RangePitch = maxPitch - minPitch;
+            }*/
 
             return result;
         }
     }
     class SoundCharacteristics
     {
-        public List<PhraseValues> Phrases;
+        public List<Phrase> Phrases;
+
+        public List<double> PitchValues;
+        public List<double> IntensityValues;
+
         public double AveragePitch;
         public double AverageIntensity;
         public double RangePitch;
         public double RangeIntensity;
-    }
-    class PhraseValues
-    {
-        public List<double> Intensity;
-        public List<double> Pitch;
 
-        public PhraseValues()
+        public SoundCharacteristics()
         {
-            Intensity = new List<double>();
-            Pitch = new List<double>();
+            Phrases = new List<Phrase>();
+            PitchValues = new List<double>();
+            IntensityValues = new List<double>();
         }
+    }
+    class Phrase
+    {
+        public int Start;
+        public int End;
+
+        public double AveragePitch;
+        public double AverageIntensity;
+
     }
 }

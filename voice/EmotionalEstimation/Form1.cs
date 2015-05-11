@@ -27,6 +27,7 @@ namespace EmotionalEstimation
             //dialog.Filter = "*.wav|Звуковые файлы";
             dialog.ShowDialog();
             infoLabel.Text = "Идет обработка...";
+            this.Text = dialog.FileName;
 
             Task.Run(() =>
                 {
@@ -34,20 +35,25 @@ namespace EmotionalEstimation
                     result = extractor.ExtractValues(dialog.FileName);
                     this.Invoke(new Action(() =>
                         {
-                            phraseslistBox.Items.Clear();
-                            int i=0;
-                            foreach (var phrase in result.Phrases)
-                            {
-                                phraseslistBox.Items.Add(i);
-                                i++;
-                            }
-                            phraseslistBox.Enabled = true;
-                            chart1.Enabled = true;
+                            ShowGraphics();
+                            infoLabel.Text = "Готово";
                         }));
-                    
+
+                    List<Contour> contours = new List<Contour>();
+                    List<Phrase> intphrases = new List<Phrase>();
+                    foreach (var phrase in result.Phrases)
+                    {
+                        var phraseValues=result.PitchValues.GetRange(phrase.Start, phrase.End - phrase.Start).ToArray();
+                        contours.Add(Analyzer.DetectContour(phraseValues));
+                        var variance = Analyzer.GetVariance(phraseValues);
+
+                        if (phraseValues.Average() > result.AveragePitch)
+                            intphrases.Add(phrase);
+                    }
+                    contours.ToString();
                 });
         }
-        private void ShowPhrase(PhraseValues phrase)
+        private void ShowGraphics()
         {
             Chart chart = new Chart();
             Series PitchSeries = new Series("Pitch");
@@ -57,7 +63,7 @@ namespace EmotionalEstimation
             PitchSeries.ChartArea = "ChartArea1";
             PitchSeries.Legend = "Legend1";
 
-            phrase.Pitch.ForEach(p => { PitchSeries.Points.AddY(p); });
+            result.PitchValues.ForEach(p => { PitchSeries.Points.AddY(p); });
             chart.Series.Add(PitchSeries);
 
             Series IntSeries = new Series("Intensity");
@@ -67,19 +73,32 @@ namespace EmotionalEstimation
             IntSeries.ChartArea = "ChartArea1";
             IntSeries.Legend = "Legend1";
 
-            phrase.Intensity.ForEach(i => { IntSeries.Points.AddY(i); });
+            result.IntensityValues.ForEach(i => { IntSeries.Points.AddY(i); });
+
+            double maxY = result.PitchValues.Max();
+
+            Series phraseSeries = new Series("phrases");
+            phraseSeries.Color = Color.Green;
+            phraseSeries.IsVisibleInLegend = false;
+            phraseSeries.ChartType = SeriesChartType.Point;
+            phraseSeries.ChartArea = "ChartArea1";
+            phraseSeries.Legend = "Legend1";
+            result.Phrases.ForEach(p => { phraseSeries.Points.AddXY(p.Start, maxY); phraseSeries.Points.AddXY(p.End, maxY);});
+            chart1.ChartAreas[0].AxisX.Minimum = 0;
 
             chart1.Series.Clear();
             chart2.Series.Clear();
             chart1.Series.Add(PitchSeries);
             chart2.Series.Add(IntSeries);
+            chart1.Series.Add(phraseSeries);
+
             chart1.DataBind();
             chart2.DataBind();
         }
 
         private void phraseslistBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            ShowPhrase(result.Phrases[phraseslistBox.SelectedIndex]);
+            ShowGraphics();
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -98,7 +117,7 @@ namespace EmotionalEstimation
             ObjWorkSheet = (Microsoft.Office.Interop.Excel.Worksheet)ObjWorkBook.Sheets[1];
             //ObjWorkSheet.Cells[1, 1] = "test";
 
-            int line = 10;
+            int line = 3;
             int column=1;
             int count = 0;
 
@@ -108,19 +127,27 @@ namespace EmotionalEstimation
                 {
                     Extractor extractor = new Extractor();
                     var result = extractor.ExtractValues(file);
+                    var pitchVariance=Analyzer.GetVariance(result.PitchValues.ToArray());
+                    var IntVariance=Analyzer.GetVariance(result.IntensityValues.ToArray());
+
+                    ObjWorkSheet.Cells[line, column] = pitchVariance;
+                    ObjWorkSheet.Cells[line, column + 1] = IntVariance;
+                    ObjWorkSheet.Cells[line, column + 2] = result.RangePitch;
+                    ObjWorkSheet.Cells[line, column + 3] = result.RangeIntensity;
+
+                    List<Contour> contours = new List<Contour>();
                     foreach (var phrase in result.Phrases)
                     {
-                        for (int i = 0; i < phrase.Intensity.Count; i++)
-                        {
-                            this.Invoke(new Action(() =>
-                            {
-                                ObjWorkSheet.Cells[line + i, column] = phrase.Pitch[i];
-                                ObjWorkSheet.Cells[line + i, column + 1] = phrase.Intensity[i];
-                            }));
-                        }
+                        contours.Add(Analyzer.DetectContour(result.PitchValues.GetRange(phrase.Start, phrase.End - phrase.Start).ToArray()));
                     }
-                    column += 4;
-                    line = 10;
+                    if(contours.Count(c => c == Contour.Rising)>(contours.Count/2))
+                        ObjWorkSheet.Cells[line, column + 4] = "Rising";
+                    else
+                        ObjWorkSheet.Cells[line, column + 4] = "Falling";
+
+
+                    column =1;
+                    line++;
                     count++;
 
                     this.Invoke(new Action(() =>

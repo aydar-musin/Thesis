@@ -46,6 +46,7 @@ namespace EmotionalEstimation
                         var phraseValues=result.PitchValues.GetRange(phrase.Start, phrase.End - phrase.Start).ToArray();
                         contours.Add(Analyzer.DetectContour(phraseValues));
                         var variance = Analyzer.GetVariance(phraseValues);
+                        
 
                         if (phraseValues.Average() > result.AveragePitch)
                             intphrases.Add(phrase);
@@ -83,8 +84,19 @@ namespace EmotionalEstimation
             phraseSeries.ChartType = SeriesChartType.Point;
             phraseSeries.ChartArea = "ChartArea1";
             phraseSeries.Legend = "Legend1";
-            result.Phrases.ForEach(p => { phraseSeries.Points.AddXY(p.Start, maxY); phraseSeries.Points.AddXY(p.End, maxY);});
             chart1.ChartAreas[0].AxisX.Minimum = 0;
+            foreach (var phrase in result.Phrases)
+            {
+                var phraseValues = result.PitchValues.GetRange(phrase.Start, phrase.End - phrase.Start).ToArray();
+                phraseSeries.Points.AddXY(phrase.Start, maxY);
+
+                var dds = Analyzer.ComputeDDS(phraseValues);
+                phraseSeries.Points.Add(new DataPoint() { XValue=phrase.Start, YValues=new[]{maxY}, Label=string.Format("{0}/{1}/{2}",dds.Difference,dds.Distance, dds.Slope)});
+ 
+            }
+            result.Phrases.ForEach(p => { });
+            
+
 
             chart1.Series.Clear();
             chart2.Series.Clear();
@@ -116,8 +128,26 @@ namespace EmotionalEstimation
             //Таблица.
             ObjWorkSheet = (Microsoft.Office.Interop.Excel.Worksheet)ObjWorkBook.Sheets[1];
             //ObjWorkSheet.Cells[1, 1] = "test";
+            ObjWorkSheet.Cells[1, 1]="File";
+            ObjWorkSheet.Cells[2, 1] = "Median";
 
-            int line = 3;
+            ObjWorkSheet.Cells[1, 2]="Pitch Difference";
+            ObjWorkSheet.Cells[1, 3]="Pitch Distance";
+            ObjWorkSheet.Cells[1, 4]="Pitch Slope";
+            
+            ObjWorkSheet.Cells[2, 2] = "=МЕДИАНА(B4:B50)";
+            ObjWorkSheet.Cells[2, 3] = "=МЕДИАНА(C4:C50)";
+            ObjWorkSheet.Cells[2, 4] = "=МЕДИАНА(D4:D50)";
+
+            ObjWorkSheet.Cells[1, 5] = "Intens. Difference";
+            ObjWorkSheet.Cells[1, 6] = "Intens. Distance";
+            ObjWorkSheet.Cells[1, 7] = "Intens. Slope";
+
+            ObjWorkSheet.Cells[2, 5] = "=МЕДИАНА(E4:E50)";
+            ObjWorkSheet.Cells[2, 6] = "=МЕДИАНА(F4:F50)";
+            ObjWorkSheet.Cells[2, 7] = "=МЕДИАНА(G4:G50)";
+
+            int line = 4;
             int column=1;
             int count = 0;
 
@@ -130,21 +160,31 @@ namespace EmotionalEstimation
                     var pitchVariance=Analyzer.GetVariance(result.PitchValues.ToArray());
                     var IntVariance=Analyzer.GetVariance(result.IntensityValues.ToArray());
 
-                    ObjWorkSheet.Cells[line, column] = pitchVariance;
-                    ObjWorkSheet.Cells[line, column + 1] = IntVariance;
-                    ObjWorkSheet.Cells[line, column + 2] = result.RangePitch;
-                    ObjWorkSheet.Cells[line, column + 3] = result.RangeIntensity;
+                    //ObjWorkSheet.Cells[line, column] = pitchVariance;
+                    //ObjWorkSheet.Cells[line, column + 1] = IntVariance;
+                    //ObjWorkSheet.Cells[line, column + 2] = result.RangePitch;
+                    //ObjWorkSheet.Cells[line, column + 3] = result.RangeIntensity;
 
-                    List<Contour> contours = new List<Contour>();
+                    List<DDS> PitchDdsList=new List<DDS>();
+                    List<DDS> IntensityDdsList = new List<DDS>();
+
                     foreach (var phrase in result.Phrases)
                     {
-                        contours.Add(Analyzer.DetectContour(result.PitchValues.GetRange(phrase.Start, phrase.End - phrase.Start).ToArray()));
-                    }
-                    if(contours.Count(c => c == Contour.Rising)>(contours.Count/2))
-                        ObjWorkSheet.Cells[line, column + 4] = "Rising";
-                    else
-                        ObjWorkSheet.Cells[line, column + 4] = "Falling";
+                        var values = result.PitchValues.GetRange(phrase.Start, phrase.End - phrase.Start).ToArray();
+                        PitchDdsList.Add(Analyzer.ComputeDDS(values));
 
+                        values = result.IntensityValues.GetRange(phrase.Start, phrase.End - phrase.Start).ToArray();
+                        IntensityDdsList.Add(Analyzer.ComputeDDS(values));
+                    }
+                    ObjWorkSheet.Cells[line, 1] =file;
+                    ObjWorkSheet.Cells[line, 2] = PitchDdsList.Average(d=>d.Difference);
+                    ObjWorkSheet.Cells[line, 3] = PitchDdsList.Average(d=>d.Distance);
+                    ObjWorkSheet.Cells[line, 4] = PitchDdsList.Average(d=>d.Slope);
+
+                    ObjWorkSheet.Cells[line, 5] = IntensityDdsList.Average(d=>d.Difference);
+                    ObjWorkSheet.Cells[line, 6] = IntensityDdsList.Average(d=>d.Distance);
+                    ObjWorkSheet.Cells[line, 7] = IntensityDdsList.Average(d=>d.Slope);
+                    
 
                     column =1;
                     line++;

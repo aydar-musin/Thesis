@@ -66,7 +66,57 @@ namespace EmotionalEstimation
                     return Contour.Rising;
             }
         }
+
+        public static DDS ComputeDDS(double[] input)
+        {
+            double min = 100000;
+            double max = 0;
+            int minindex = -1;
+            int maxindex = -1;
+
+            for (int i = 0; i < input.Length; i++)
+            {
+                if (input[i] == 0)
+                    continue;
+
+                if (input[i] < min)
+                {
+                    min = input[i];
+                    minindex = i;
+                }
+
+                if (input[i] > max)
+                {
+                    max = input[i];
+                    maxindex = i;
+                }
+            }
+
+            if (maxindex == -1 || minindex == -1)
+                throw new Exception("Ошибка подсчета DDS");
+
+            DDS dds = new DDS();
+
+            if (maxindex > minindex)
+                dds.Distance = maxindex - minindex;
+            else
+                dds.Distance = minindex - maxindex;
+
+            dds.Difference = max - min;
+            dds.Slope = Math.Sqrt(Math.Pow(dds.Difference, 2) + Math.Pow(dds.Distance, 2));
+
+            return dds;
+        }
     }
 
+    /// <summary>
+    /// Distance, Difference, Slope
+    /// </summary>
+    public struct DDS
+    {
+        public double Distance;
+        public double Difference;
+        public double Slope;
+    }
     public enum Contour { Rising,Falling,Smooth}
 }

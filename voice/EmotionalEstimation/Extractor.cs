@@ -20,7 +20,7 @@ namespace EmotionalEstimation
             si.UseShellExecute = false;
             si.CreateNoWindow = true;
 
-            si.Arguments = @"-a C:\praatfiles\words.praat " + file;
+            si.Arguments = @"-a C:\praatfiles\words2.praat " + file;
 
             Process process = new Process();
             process.StartInfo = si;
@@ -33,22 +33,31 @@ namespace EmotionalEstimation
                 throw new Exception("Ошибка обработки файла!");
             else
             {
-
-                var values = resultLine.Trim().Split(' ');
-
+                var lines = resultLine.Split('\n');
+                result.Centroid = Convert.ToDouble(lines[0].Trim().Replace('.',','));
+                
                 int start=0;
                 int end=0;
 
-                foreach (var value in values)
+                foreach (var line in lines.ToList().GetRange(1,lines.Length-1))
                 {
-                    var numbers = value.Split('/');
+                    if (string.IsNullOrEmpty(line.Trim()))
+                        continue;
+
+                    var numbers = line.Split(' ');
                     double pitch = Convert.ToDouble(numbers[0].Replace('.', ','));
-                    double intensity = Convert.ToDouble(numbers[1].Replace('.', ','));
+                    double f1 = Convert.ToDouble(numbers[1].Replace('.', ','));
+                    double f2 = Convert.ToDouble(numbers[2].Replace('.', ','));
+                    double f3 = Convert.ToDouble(numbers[3].Replace('.', ','));
+                    double intensity = Convert.ToDouble(numbers[4].Replace('.', ','));
 
                     if (pitch > 0)
                     {
                         result.PitchValues.Add(pitch);
                         result.IntensityValues.Add(intensity);
+                        result.F1Values.Add(f1);
+                        result.F2Values.Add(f2);
+                        result.F3Values.Add(f3);
                         end++;
                     }
                     else
@@ -60,15 +69,13 @@ namespace EmotionalEstimation
                         }
                         result.PitchValues.Add(0);
                         result.IntensityValues.Add(0);
+                        result.F1Values.Add(0);
+                        result.F2Values.Add(0);
+                        result.F3Values.Add(0);
                         start++;
                         end=start;
                     }
                 }
-                result.RangePitch = result.PitchValues.Max() - result.PitchValues.Where(p => p > 0).Min();
-                result.RangeIntensity = result.IntensityValues.Max() - result.IntensityValues.Where(p => p > 0).Min();
-                result.AverageIntensity = result.IntensityValues.Average();
-                result.AveragePitch = result.PitchValues.Average();
-
 
                 List<Phrase> phrases=new List<Phrase>();
                 bool lastIsMerged=false;
@@ -131,16 +138,20 @@ namespace EmotionalEstimation
         public List<double> PitchValues;
         public List<double> IntensityValues;
 
-        public double AveragePitch;
-        public double AverageIntensity;
-        public double RangePitch;
-        public double RangeIntensity;
+        public List<double> F1Values;
+        public List<double> F2Values;
+        public List<double> F3Values;
+
+        public double Centroid;
 
         public SoundCharacteristics()
         {
             Phrases = new List<Phrase>();
             PitchValues = new List<double>();
             IntensityValues = new List<double>();
+            F1Values = new List<double>();
+            F2Values = new List<double>();
+            F3Values = new List<double>();
         }
     }
     class Phrase

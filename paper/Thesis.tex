@@ -109,9 +109,31 @@ Accuracy of recognition depends not only on extracted features and used classifi
 \begin{figure}[t]
 	\centering
 		\includegraphics[scale=0.8]{emotion-table-example}
-	\caption{Sound characterisstics for emotions [1]}
+	\caption{Sound characteristics for emotions [1]}
 	\label{fig:emotion-table-example}
 \end{figure}
 
 For example, at the Figure 1 showed some features of emotions. And we can see that some emotions very similar(anger-joy,sadness-boredom). Although number of emotions is not so large. But with increasing number of emotions, also increases intersections between emotions on features. So it's important to define emotions which is needed for particular task
+
+\section{Implementation}
+\subsection{The goal in general}
+The main goal is to implement simple recognition system. The program should have ability to recognize emotions from sound file or microphone. Also, it should be resistant to interference and noise. Implementation will be carried out using C\# programming language.
+
+Implementation can be divided to four steps:
+\begin{enumerate}
+	\item Extracting sound characteristics from sound file or microphone
+	\item Speech splitting to phrases or words
+	\item Feature extraction and analyzing
+	\item Classification
+\end{enumerate}
+
+\subsubsection{Extracting sound characteristics}
+At first, is important to note that we need only voice characteristics and to avoid wrong results sound should be filtered. At first, is important to note that we need only voice characteristics and to avoid wrong results sound should be filtered. Filtering is important not only because is needed correct voice characteristics, also because it provides ability distinguish voiced and unvoiced intervals of speech. 
+\\
+
+To retrieve sound characteristics using C\# one can use these libraries:
+\begin{itemize}
+	\item NAudio (http://naudio.codeplex.com)
+	\item Bass Audio library (http://naudio.codeplex.com)
+\end{itemize}
 \end{document}

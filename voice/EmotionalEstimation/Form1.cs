@@ -42,7 +42,7 @@ namespace EmotionalEstimation
                     
                     if (classifier != null)
                     {
-                        var features = Analyzer.Analyze(sound,Emotions.Neutral);
+                        var features = Analyzer.GetFeatures(sound,Emotions.Neutral);
                         var result = classifier.Classify(features);
                         string result_string = string.Format("Anger- {0}{3}Happiness- {1}{3}Sadness- {2}{3}Neutral- {4}", result.Anger, result.Happiness, result.Sadness,Environment.NewLine,result.Neutral);
                         Message_Result(result_string);
@@ -166,7 +166,7 @@ namespace EmotionalEstimation
                 {
                     Extractor extractor = new Extractor();
                     var sound = extractor.ExtractValues(file);
-                    var features=Analyzer.Analyze(sound,Emotions.Neutral);
+                    var features=Analyzer.GetFeatures(sound,Emotions.Neutral);
                     var emotions_result=classifier.Classify(features);
 
                     var emotion=emotions_result.GetMax();
@@ -229,7 +229,7 @@ namespace EmotionalEstimation
                             Extractor ex = new Extractor();
                             var sound = ex.ExtractValues(file);
 
-                            var feature = Analyzer.Analyze(sound, dirsToAnalyze[dir]);
+                            var feature = Analyzer.GetFeatures(sound, dirsToAnalyze[dir]);
                             featuresList.Add(feature);
 
                             File.AppendAllLines("analyze_result.txt", new string[]{file+"\t"+feature.ToString()}); ;

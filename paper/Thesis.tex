@@ -1,0 +1,81 @@
+\documentclass[12pt, letterpaper]{article}
+\usepackage[utf8]{inputenc}
+
+\title{Recognition of emotions in speech:\\overview and implementation}
+\author{Aydar Musin\\Supervisor: prof. Maxim Talanov}
+\date{June 2015, Innopolis University}
+
+\begin{document}
+
+\begin{titlepage}
+\maketitle
+\end{titlepage}
+
+\begin{abstract}
+In this paper will be considered research on recognition of emotions in speech, distinguished their techniques, advantages and disadvantages. Then will be offered own simple implementation of the recognition system.
+\end{abstract}
+
+\section{Introduction}
+
+Speech emotion recognition has many application areas. More evident of them: robots and improving the quality of customer service.
+
+If robot has ability to emotional speech generating, it will help him to interact with people better. Because understanding of speech emotion recognition gives understanding how to generate emotional speech. And robots with emotional speech are more people-friendly. Also, speech emotion recognition can improve the robot's decision-making system. Because there are situations when a robot needs to take into account human emotions. %Привести пример!!!!!
+
+Closer to reality application of this system is within an estimation of customer service quality. For example, call-centers have records of conversations. And for operator's work estimation we can identify expressive conversations and analyze them.
+
+There are many research where described dependencies between human emotions and acoustic characteristics. Main differences between them in using different:
+\begin{itemize}
+	\item Acoustics characteristics
+	\item Features
+	\item Classification techniques
+	\item Recognizable emotions
+\end{itemize}
+
+The main goal of this study is to consider these differences and implement own simple solution.
+\\
+\\
+\\
+\\
+
+\section{Overview}
+\subsection{Acoustic characteristics}
+Before we consider a few studies, let's consider some acoustic characteristics:
+\begin{itemize}
+	\item Pitch or fundamental frequency
+	\item Loudness or intensity
+	\item Formants
+	\item MFCC (Mel-frequency cepstrum coefficients)
+\end{itemize}
+
+\subsubsection{Pitch}
+Human speech frequency is approximately in the range of 300 to 3400 Hz. The fundamental frequency of speech for male from 85 to 185 Hz, for female from 165 to 255.
+\begin{quote}
+The fundamental frequency, often referred to simply as the fundamental, is defined as the lowest frequency of a periodic waveform. In terms of a superposition of sinusoids (e.g. Fourier series), the fundamental frequency is the lowest frequency sinusoidal in the sum [http://en.wikipedia.org/wiki/Fundamental\_frequency].
+\end{quote}
+
+\subsubsection{Formant and MFCC}
+The most frequently in studies used only pitch and loudness. Although formant and MFCC characteristics also useful.
+\begin{quote}
+Formant is a range of frequencies [of a complex sound] in which there is an absolute or relative maximum in the sound spectrum".[2] In speech science and phonetics, however, a formant is also sometimes used to mean an acoustic resonance[3] of the human vocal tract.[http://en.wikipedia.org/wiki/Formant]
+\\
+\\
+In sound processing, the mel-frequency cepstrum (MFC) is a representation of the short-term power spectrum of a sound, based on a linear cosine transform of a log power spectrum on a nonlinear mel scale of frequency.
+\end{quote}
+
+
+\subsection{Features}
+For emotion classifying from acoustic characteristics is necessary extract some features of these characteristics for every emotion. We extract and compute emotion features from training set to use it for classification. And classification is as follows:
+\begin{enumerate}
+	\item Extract features from processed speech
+	\item Compare extracted features with emotion's features
+\end{enumerate}
+
+Features can be divided to two types by how to compute and how to compare them:
+\begin{itemize}
+	\item speaker-dependent
+	\item speaker-independent
+\end{itemize}
+
+\subsubsection{Speaker-dependent features}
+At first, with speaker-dependent features we need a splitted training set for every person. And compute features for every person. When classifying we need to compare extracted features with personal features
+\end{document}

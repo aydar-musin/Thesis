@@ -74,7 +74,7 @@ namespace EmotionalEstimation
         /// </summary>
         /// <param name="sound"></param>
         /// <returns></returns>
-        public static Features Analyze(SoundCharacteristics sound,Emotions emotion)
+        public static Features GetFeatures(SoundCharacteristics sound,Emotions emotion)
         {
             Features result = new Features();
             result.Centroid = sound.Centroid;

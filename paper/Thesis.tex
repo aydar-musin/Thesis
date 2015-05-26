@@ -77,5 +77,7 @@ Features can be divided to two types by how to compute and how to compare them:
 \end{itemize}
 
 \subsubsection{Speaker-dependent features}
-At first, with speaker-dependent features we need a splitted training set for every person. And compute features for every person. When classifying we need to compare extracted features with personal features
+At first, with speaker-dependent features we need a splitted training set for every person. And compute features for every person. When classifying we need to compare extracted features with personal features. Advantages of this technique: can be more precisely and much features are not needed. These features based on some average values. For example: average pitch, average intensity, pitch range, intensity range. And they are different for every person. That is why it is not a universal technique because requires statistics keeping for each person. And it is can be applied only in a few cases.
+\subsubsection{Speaker-independent features}
+Unlike a previous technique here divided training set is not required. But the accuracy of classifying depends on number of speech records and number of speakers represented in the training set. Features based on speech signal dynamics, also some average values. For example, Pitch DDS (explanation further), Intensity DDS, average phrase duration, etc.
 \end{document}

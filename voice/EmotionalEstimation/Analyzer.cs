@@ -13,7 +13,7 @@ namespace EmotionalEstimation
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
-        public static double GetVariance(double[] input)
+        private static double GetVariance(double[] input)
         {
             input = input.Where(n => n > 0).ToArray();
             var mean = input.Average();
@@ -33,7 +33,7 @@ namespace EmotionalEstimation
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
-        public static DDS ComputeDDS(double[] input)
+        private static DDS ComputeDDS(double[] input)
         {
             double min = 100000;
             double max = 0;

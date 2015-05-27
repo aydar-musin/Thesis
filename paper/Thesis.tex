@@ -127,7 +127,15 @@ Implementation can be divided to four steps:
 	\item Classification
 \end{enumerate}
 
+\begin{figure}
+	\centering
+		\includegraphics[scale=0.7]{images/pass-band-filter.png}
+	\caption{Pass-band filter}
+	\label{fig:pass-band-filter}
+\end{figure}
+
 \subsubsection{Extracting sound characteristics}
+
 At first, is important to note that we need only voice characteristics and to avoid wrong results sound should be filtered. At first, is important to note that we need only voice characteristics and to avoid wrong results sound should be filtered. Filtering is important not only because is needed correct voice characteristics, also because it provides ability distinguish voiced and unvoiced intervals of speech. 
 \\
 
@@ -136,4 +144,151 @@ To retrieve sound characteristics using C\# one can use these libraries:
 	\item NAudio (http://naudio.codeplex.com)
 	\item Bass Audio library (http://naudio.codeplex.com)
 \end{itemize}
+
+But these libraries provide only sound signal receiving from file or microphone. And to get sound characteristic, for example pitch, we have to implement also Fast Fourier Transform function. Also, we have to implement filtering function. For example, simplest filtering can be implemented as pass-band filter. 
+
+Pass-band filter just establish range of signal values, and if signal values go beyond they will be ignored.(Figure 2)
+\\
+There is also software package which fits our goals - PRAAT. It is often used for speech analyzing and contains all needed functions:
+\begin{itemize}
+	\item Get fundamental frequency (pitch)
+	\item Get loudness
+	\item Get spectrogram
+	\item Get formant
+	\item Filtering function
+\end{itemize}
+
+That are functions that we will use, but package contains a lot more functions. And for using all function it has own script language. 
+
+For filtering in the package is using \textit{Remove noise} function. Which consists of pass-band filter and special functions for white noise removing.
+
+Eventually, using PRAAT we will get from sound file these characteristics:
+\begin{itemize}
+	\item Pitch, or F0
+	\item Loudness, or intensity
+	\item Formant (F1, F2, F3)
+	\item Center of gravity of spectrogram
+\end{itemize}
+Graphics for these characteristics represented in the Figure 3. We can see that there are intervals where values are equal to zero. It is the result of filter working. When pitch (F0) goes beyond human speech frequency range, all values are assigned to zero.
+\begin{figure}
+	\centering
+		\includegraphics[scale=0.8]{images/sound-characteristics.png}
+	\caption{Extracted sound characteristics}
+	\label{fig:sound-characteristics}
+\end{figure}
+
+\subsubsection{Dividing speech to phrases}
+
+Because when people are speaking, they express emotions by changing some characteristics of phrases or words. And for accurate recognition is needed to divide speech to phrases and analyze them separately.
+
+It is worth noting, that precise dividing is impossible without filtering. That is why successfulness of  this step very strong related with previous step. In output from previous step we get set of characteristics where silence intervals marked as zeros. So, algorithm can be as follows: 
+
+ \begin{itemize}
+	 \item Until zero value, collect phrase values
+		\item After zero value, ends with this phrase and go to the next
+ \end{itemize}
+
+But problem with this in that a few zeros can appear in the middle of the phrase. And to solve this problem we should set the minimum length of zeros between phrases. At the Figure 3 is shown speech divided to phrases, and within phrase exist intervals of zeros but they are slight. 
+
+So after two steps in the output is received set of sound characteristics and phrase pointers. It is now necessary to extract features for classification.
+\begin{figure}
+	\centering
+		\includegraphics[scale=1]{images/phrases.png}
+	\caption{Speech divided to phrases}
+	\label{fig:phrases}
+\end{figure}
+\\
+\\
+\\
+\\
+\\
+\\
+
+\subsection{Features extraction}
+
+\begin{table}
+
+\begin{tabular}{|p{2.2in}|p{2.2in}|} 
+\hline
+\multirow{Pitch (F0) }& Variance \\ \cline{2-2}
+													& Range \\ \cline{2-2} 
+													& DDS \\ \hline 
+Formant 1 (F1) & DDS \\ \hline 
+Formant 2 (F2) & DDS \\ \hline 
+Formant 2 (F3) & DDS \\ \hline 
+\multirow{Loudness (Intensity) } & Variance \\ \cline{2-2}
+																		& Range \\ \cline{2-2}
+																		& DDS \\ \hline 
+\multirow{Time} & mean phrase duration \\ \cline{2-2} 
+ & mean silence duration \\ \hline 
+Spectrogramm & Center of gravity (centroid) \\ \hline 
+\end{tabular}
+	\caption{Using features}
+	\label{Using features}
+\end{table}
+\emph{Variance.} It can be calculated by standard deviation of set:
+\begin{center}
+\[V=\sqrt{
+\sum_{i=0}^{n}{
+               (x_i-\overline{x})^2
+               }
+}
+\]
+ where  $\overline{x}$ is average of set
+\end{center}
+\\
+\\
+\emph{Range} It is difference between maximum and minimum
+\\
+\\
+\emph{DDS (Difference-Distance-Slope)} This feature is calculating for each phrase( Example in the Figure 5) 
+\begin{itemize}
+	\item Find local $maximum$ and $minimum$ elements for phrase
+	\item $difference=maximum-minimum$
+	\item $distance=maximum_{position}-minimum_{position}$
+\end{itemize}
+
+\begin{figure}
+	\centering
+		\includegraphics[scale=0.5]{images/dds.png}
+	\caption{DDS}
+	\label{fig:phrases}
+\end{figure}
+Phrase duration and silence duration are calculating by phrase pointers. Also, center of gravity of spectrogram for all speech provides PRAAT. 
+\subsection{Features from training data set}
+
+As a training data set we use EmoDB[http://emodb.bilderbar.info]. It is emotional database which consist of speech records of 10 different actors. For classification we use only four basic emotions: anger, happiness,sadness,neutral. And from EmoDB we use 107 records with these emotions and different texts. Results of features extraction represented in Table 3.
+\begin{table}[h]
+	\centering
+		\begin{tabular}{l|l|l|l|l|}
+			\hline
+				Feature/Emotion& anger&	happy	&sadness	&neutral\\ \hline
+PitchDff&	137,08	&211,55	&67,32	&64,63\\ \hline 
+PitchDis&	-6	&-10,125&	-19,33&	-8\\ \hline
+IntDif&	22,22&	22,92&	19,63&	18,76\\ \hline
+IntDis	&6,44	&-5,83&	-7,41&	-3,2\\ \hline
+F1Dif&	239,44&	228,16&	210,52&	193,49\\ \hline
+F1Dis&	-1,71	&-5,87&	-9&	-1,66\\ \hline
+F2dif	&349,82&	318,56&	340,58&	299,02\\ \hline
+F2Dis&	-1,42&	-3,15&	-2,32	&0,66\\ \hline
+F3Dif&	355,51&	359,38&	449,35&	425,46\\ \hline
+F3Dis&	-0,4	&-2,28&	-0,33&	2,6\\ \hline
+PitchRange&	465,16&	406,37&	150,065&	457,2\\ \hline
+IntRange&	31,36&	28,95&	28,865&	27,61\\ \hline
+PitchVariance&	7253,96&	10823,92&	1737,46&	6720,77\\ \hline
+IntVariance	&46,19&	41,20&	35,10	&36,24\\ \hline
+PhraseDuration&	28,9&	38,16&	39,58	&24,66\\ \hline
+SilenceDuration	&5,2	&4,45	&5,375&	5,4\\ \hline
+Centroid&	580,3	&519,54&	359,08&	350,02\\ \hline
+ \hline
+		\end{tabular}
+	\caption{Extracted features from training data set. Dif-Difference, Dis-Distance, Int-Intensity}
+	\label{tab:ExtractedFeaturesFromTrainingDataSet}
+\end{table}
+
+\subsection{Classification}
+So we have got some feature values for each emotion, and is needed to build classifier using them. There are impossible to set strict confines for features values for each emotion. Because emotion feature value is median for all analyzed speech records and some values very different from this value. In addition, some feature values are very similar and it's difficult divide them to four classes. But often among these 4 values exist two high and two low values. It caused by fact that some emotion very similar with some features, but they have some distinct features.
+For example: angry-happy, sadness-neutral. It can be seen on the Table 3, most of the features of angry and happiness are similar, there are some features which distinct for them. For example, phrase duration is lower for angry.
+
+That is why was decided to use fuzzy sets for classifying each feature to two classes: \emph{high} and \emph{low}. Because classification to 2 classes will be more precise. And fuzzy sets allow to set intersection between them.
 \end{document}

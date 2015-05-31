@@ -20,7 +20,7 @@ namespace EmotionalEstimation
             si.UseShellExecute = false;
             si.CreateNoWindow = true;
 
-            si.Arguments = @"-a C:\praatfiles\words2.praat " + file;
+            si.Arguments = @"-a E:\praatfiles\words2.praat " + file;
 
             Process process = new Process();
             process.StartInfo = si;

@@ -172,8 +172,8 @@ namespace EmotionalEstimation
             double intersection = (boundaries[0] * 20) / 100;
             LinguisticVariable variable = new LinguisticVariable(name);
 
-            variable.MembershipFunctions.AddTriangle(name+"_IsLow", min, boundaries[0], boundaries[1] + intersection);
-            variable.MembershipFunctions.AddTriangle(name + "_IsHigh", boundaries[0]-intersection, boundaries[1], max);
+            variable.MembershipFunctions.AddTriangle(name+"_IsLow", min, boundaries[0], boundaries[1] - intersection);
+            variable.MembershipFunctions.AddTriangle(name + "_IsHigh", boundaries[0]+intersection, boundaries[1], max);
 
             if (!FeatureWeights.ContainsKey(name))
             {
@@ -314,10 +314,10 @@ namespace EmotionalEstimation
                 return Emotions.Anger;
             else if (Happiness > Anger && Happiness > Sadness && Happiness > Neutral)
                 return Emotions.Happy;
-            else if (Sadness > Anger && Sadness > Happiness && Sadness > Neutral)
+            else/* if (Sadness > Anger && Sadness > Happiness && Sadness > Neutral)*/
                 return Emotions.Sadness;
-            else
-                return Emotions.Neutral;
+            /*else
+                return Emotions.Neutral;*/
         }
     }
 

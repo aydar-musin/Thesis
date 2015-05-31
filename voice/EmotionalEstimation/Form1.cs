@@ -200,7 +200,7 @@ namespace EmotionalEstimation
 
         private void LearnButton_Click(object sender, EventArgs e)
         {
-            string path = "C:/praatfiles/samples/";
+            string path = "E:/praatfiles/test/";
 
             Dictionary<string,Emotions> dirsToAnalyze = new Dictionary<string,Emotions>();
             dirsToAnalyze.Add("anger",Emotions.Anger);

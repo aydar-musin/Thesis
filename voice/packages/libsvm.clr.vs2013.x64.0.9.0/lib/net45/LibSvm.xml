@@ -1,0 +1,190 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        "LibSvm"
+    </assembly>
+    <members>
+        <member name="M:LibSvm.Svm.CheckProbabilityModel(LibSvm.Model)">
+            <summary>
+This function checks whether the model contains required information
+to do probability estimates. If so, it returns true. Otherwise, false
+is returned. This function should be called before calling
+GetSvrProbability and PredictProbability.
+</summary>
+        </member>
+        <member name="M:LibSvm.Svm.CheckParameter(LibSvm.Problem,LibSvm.Parameter)">
+            <summary>
+This function checks whether the parameters are within the feasible
+range of the problem. This function should be called before 
+Svm.Train() and Svm.CrossValidation(). It returns null if the
+parameters are feasible, otherwise an error message is returned.
+</summary>
+        </member>
+        <member name="M:LibSvm.Svm.LoadModel(System.String)">
+            <summary>
+This function loads a model from file.
+</summary>
+        </member>
+        <member name="M:LibSvm.Svm.SaveModel(System.String,LibSvm.Model)">
+            <summary>
+This function saves a model to a file.
+</summary>
+        </member>
+        <member name="M:LibSvm.Svm.PredictProbability(LibSvm.Model,LibSvm.Node[],System.Double[])">
+            <summary>
+This function does classification or regression on a test vector x
+given a model with probability information.
+For a classification model with probability information, this
+function gives NrClass probability estimates in the array
+probEstimates. The class with the highest probability is
+returned. For regression/one-class SVM, the array probEstimates
+is unchanged and the returned value is the same as that of
+Predict.
+</summary>
+        </member>
+        <member name="M:LibSvm.Svm.PredictValues(LibSvm.Model,LibSvm.Node[],System.Double[])">
+            <summary>
+This function gives decision values on a test vector x given a
+model, and returns the predicted label (classification) or
+the function value (regression).
+For a classification model with NrClass classes, this function
+gives NrClass*(NrClass - 1)/2 decision values in the array
+decValues. The order is label[0] vs.label[1], ...,
+label[0] vs.label[NrClass - 1], label[1] vs.label[2], ...,
+label[NrClass - 2] vs.label[NrClass - 1]. The returned value is
+the predicted class for x. Note that when NrClass=1, this
+function does not give any decision value.
+For a regression model, decValues[0] and the returned value are
+both the function value of x calculated using the model. For a
+one-class model, decValues[0] is the decision value of x, while
+the returned value is +1/-1.
+</summary>
+        </member>
+        <member name="M:LibSvm.Svm.Predict(LibSvm.Model,LibSvm.Node[])">
+            <summary>
+This function does classification or regression on a test vector x
+given a model.
+For a classification model, the predicted class for x is returned.
+For a regression model, the function value of x calculated using
+the model is returned.For an one - class model, +1 or -1 is
+returned.
+</summary>
+        </member>
+        <member name="M:LibSvm.Svm.CrossValidation(LibSvm.Problem,LibSvm.Parameter,System.Int32)">
+            <summary>
+This function conducts cross validation. Data are separated to
+NrFold folds. Under given parameters, sequentially each fold is
+validated using the model from training the remaining. Predicted
+labels (of all prob's instances) in the validation process are
+stored in the array called target.
+The format of problem is same as that for Train().
+</summary>
+        </member>
+        <member name="M:LibSvm.Svm.Train(LibSvm.Problem,LibSvm.Parameter)">
+            <summary>
+This function constructs and returns an SVM model according
+to the given training data and parameters.
+</summary>
+        </member>
+        <member name="M:LibSvm.Svm.ReadProblem(System.String)">
+            <summary>
+This function reads an SVM model from given filename.
+</summary>
+        </member>
+        <member name="P:LibSvm.Model.Type">
+            <summary>
+Gets SVM type of this model.
+</summary>
+        </member>
+        <member name="F:LibSvm.Model.FreeSv">
+            <summary>
+1 if svm_model is created by svm_load_model
+0 if svm_model is created by svm_train
+</summary>
+        </member>
+        <member name="F:LibSvm.Model.nSV">
+            <summary>
+number of SVs for each class (nSV[k])
+nSV[0] + nSV[1] + ... + nSV[k-1] = l
+XXX
+</summary>
+        </member>
+        <member name="F:LibSvm.Model.Label">
+            <summary>label of each class (label[k])</summary>
+        </member>
+        <member name="F:LibSvm.Model.SvIndices">
+            <summary>sv_indices[0,...,nSV-1] are values in [1,...,num_training_data] to indicate SVs in the training set</summary>
+        </member>
+        <member name="F:LibSvm.Model.ProbB">
+            <summary />
+        </member>
+        <member name="F:LibSvm.Model.ProbA">
+            <summary>pairwise probability information</summary>
+        </member>
+        <member name="F:LibSvm.Model.Rho">
+            <summary>constants in decision functions (rho[k*(k-1)/2])</summary>
+        </member>
+        <member name="F:LibSvm.Model.SvCoef">
+            <summary>coefficients for SVs in decision functions (sv_coef[k-1][l])</summary>
+        </member>
+        <member name="F:LibSvm.Model.SV">
+            <summary>SVs (SV[l])</summary>
+        </member>
+        <member name="F:LibSvm.Model.l">
+            <summary>total #SV</summary>
+        </member>
+        <member name="F:LibSvm.Model.NrClass">
+            <summary>number of classes, = 2 in regression/one class svm</summary>
+        </member>
+        <member name="F:LibSvm.Model.Param">
+            <summary>parameter</summary>
+        </member>
+        <member name="F:LibSvm.Parameter.Probability">
+            <summary>do probability estimates</summary>
+        </member>
+        <member name="F:LibSvm.Parameter.Shrinking">
+            <summary>use the shrinking heuristics</summary>
+        </member>
+        <member name="F:LibSvm.Parameter.p">
+            <summary>for EPSILON_SVR</summary>
+        </member>
+        <member name="F:LibSvm.Parameter.Nu">
+            <summary>for NU_SVC, ONE_CLASS, and NU_SVR</summary>
+        </member>
+        <member name="F:LibSvm.Parameter.Weight">
+            <summary />
+        </member>
+        <member name="F:LibSvm.Parameter.WeightLabel">
+            <summary />
+        </member>
+        <member name="F:LibSvm.Parameter.C">
+            <summary>for C_SVC, EPSILON_SVR and NU_SVR</summary>
+        </member>
+        <member name="F:LibSvm.Parameter.Eps">
+            <summary>stopping criteria</summary>
+        </member>
+        <member name="F:LibSvm.Parameter.CacheSize">
+            <summary>in MB</summary>
+        </member>
+        <member name="F:LibSvm.Parameter.Coef0">
+            <summary>for poly/sigmoid</summary>
+        </member>
+        <member name="F:LibSvm.Parameter.Gamma">
+            <summary>for poly/rbf/sigmoid</summary>
+        </member>
+        <member name="F:LibSvm.Parameter.Degree">
+            <summary>for poly</summary>
+        </member>
+        <member name="F:LibSvm.Parameter.KernelType">
+            <summary />
+        </member>
+        <member name="F:LibSvm.Parameter.SvmType">
+            <summary />
+        </member>
+        <member name="P:LibSvm.Problem.Count">
+            <summary>
+Number of training data entries.
+</summary>
+        </member>
+    </members>
+</doc>

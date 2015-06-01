@@ -37,7 +37,7 @@ namespace EmotionalEstimation
         /// <summary>
         /// buils lingustic varibles. !!!!see min and max of membership functions!!!!
         /// </summary>
-        /// <param name="features"></param>
+        /// <param name="training_f_list"></param>
         public void BuildEngine(List<Features> features)
         {
             FeatureWeights = new Dictionary<string, double>();
@@ -189,7 +189,7 @@ namespace EmotionalEstimation
 
             double anger = 0;
             anger += PitchDif.IsHigh(features.PitchDDS.Difference)*FeatureWeights[PitchDif.Name];
-            anger += PitchDis.IsLow(features.PitchDDS.Difference) * FeatureWeights[PitchDis.Name];
+            anger += PitchDis.IsLow(features.PitchDDS.Distance) * FeatureWeights[PitchDis.Name];
             anger += F1Dif.IsHigh(features.F1DDS.Difference) * FeatureWeights[F1Dif.Name];
             anger += F1Dis.IsHigh(features.F1DDS.Distance) * FeatureWeights[F1Dis.Name];
             anger += F2Dif.IsHigh(features.F2DDS.Difference) * FeatureWeights[F2Dif.Name];
@@ -274,7 +274,7 @@ namespace EmotionalEstimation
         }
 
         /// <summary>
-        /// Edit feature weights. Parameters weights should consist of N numbers, where N is number of features
+        /// Edit feature weights. Parameters weights should consist of N numbers, where N is number of training_f_list
         /// </summary>
         /// <param name="weigths"></param>
         public void EditFeatureWeights(double[] weigths)

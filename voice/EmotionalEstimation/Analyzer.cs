@@ -70,7 +70,7 @@ namespace EmotionalEstimation
         }
 
         /// <summary>
-        /// Analyzes and retrieves features from sound characteristics
+        /// Analyzes and retrieves training_f_list from sound characteristics
         /// </summary>
         /// <param name="sound"></param>
         /// <returns></returns>
@@ -128,11 +128,14 @@ namespace EmotionalEstimation
             //calculate mean phrase duration
             phraseDurationMean = phraseDurationMean / sound.Phrases.Count;
             silenceDurationMean = silenceDurationMean / sound.Phrases.Count - 1;
+            result.F3Variance = GetVariance(nonZeroF3Values.ToArray());
+            result.F3Range = nonZeroF3Values.Max() - nonZeroF3Values.Min();
 
             result.PhraseDurationMean = phraseDurationMean;
             result.SilenceDurationMean = silenceDurationMean;
 
             //DDS results from dds lists
+            
             result.PitchDDS = new DDS()
             {
                 Difference=Pitch_ddsList.Average(d=>d.Difference),
@@ -158,7 +161,6 @@ namespace EmotionalEstimation
                 Difference = F3_ddsList.Average(d => d.Difference),
                 Distance = F3_ddsList.Average(d => d.Distance)
             };
-
             return result;
         }
         public static double GetMedian(double[] sourceNumbers)
@@ -193,6 +195,9 @@ namespace EmotionalEstimation
         public double IntensityRange;
         public double PitchVariance;
         public double IntensityVariance;
+        public double F3Variance;
+        public double F3Range;
+
         public double PhraseDurationMean;
         public double SilenceDurationMean;
 
@@ -201,12 +206,24 @@ namespace EmotionalEstimation
 
         public override string ToString()
         {
-            return string.Format("{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\t{7}\t{8}\t{9}\t{10}\t{11}\t{12}\t{13}\t{14}\t{15}\t{16}",
-                PitchDDS.Difference,PitchDDS.Distance,IntensityDDS.Difference,IntensityDDS.Distance,
-                F1DDS.Difference,F1DDS.Distance,F2DDS.Difference,F2DDS.Distance,F3DDS.Difference,F3DDS.Distance,
-                PitchRange,IntensityRange,PitchVariance,IntensityVariance,PhraseDurationMean,SilenceDurationMean,Centroid);
+            return string.Format("{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\t{7}\t{8}\t{9}",
+                PitchDDS.Difference,IntensityDDS.Distance,
+                F1DDS.Difference,F3DDS.Difference,
+                PitchRange,IntensityRange,PitchVariance,IntensityVariance,PhraseDurationMean,Centroid);
         }
-
+        public double[] GetFeaturesArray()
+        {
+            return new double[] { PitchDDS.Difference,IntensityDDS.Distance,
+                F1DDS.Difference,F3DDS.Difference,
+                PitchRange,IntensityRange,PitchVariance,IntensityVariance,PhraseDurationMean,Centroid};
+        }
+        public string GetSVMString(string label)
+        {
+            return string.Format("{0}\t1:{1}\t2:{2}\t3:{3}\t4:{4}\t5:{5}\t6:{6}\t7:{7}\t8:{8}\t9:{9}\t10:{10}",
+                label, PitchDDS.Difference, IntensityDDS.Distance,
+                F1DDS.Difference, F3DDS.Difference,
+                PitchRange, IntensityRange, PitchVariance, IntensityVariance, PhraseDurationMean, Centroid);
+        }
     }
     [Serializable]
     public struct DDS

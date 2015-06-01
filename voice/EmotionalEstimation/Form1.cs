@@ -17,10 +17,13 @@ namespace EmotionalEstimation
     public partial class Form1 : Form
     {
         private Classifier classifier;
+        private SVMClassifier svm_Classifier;
 
         public Form1()
         {
             InitializeComponent();
+            //svm_Classifier = new SVMClassifier();
+            //svm_Classifier.Train();
         }
 
         private void selectFileButton_Click(object sender, EventArgs e)
@@ -44,7 +47,9 @@ namespace EmotionalEstimation
                     {
                         var features = Analyzer.GetFeatures(sound,Emotions.Neutral);
                         var result = classifier.Classify(features);
-                        string result_string = string.Format("Anger- {0}{3}Happiness- {1}{3}Sadness- {2}{3}Neutral- {4}", result.Anger, result.Happiness, result.Sadness,Environment.NewLine,result.Neutral);
+                        var svm_result = svm_Classifier.Classify(features);
+
+                        string result_string = string.Format("Anger- {0}{3}Happiness- {1}{3}Sadness- {2}{3}Neutral- {4}{3}{3} SVM: {5}", result.Anger, result.Happiness, result.Sadness,Environment.NewLine,result.Neutral, svm_result.ToString());
                         Message_Result(result_string);
                     }
                 });
@@ -200,7 +205,7 @@ namespace EmotionalEstimation
 
         private void LearnButton_Click(object sender, EventArgs e)
         {
-            string path = "E:/praatfiles/test/";
+            string path = "E:/praatfiles/training_set/";
 
             Dictionary<string,Emotions> dirsToAnalyze = new Dictionary<string,Emotions>();
             dirsToAnalyze.Add("anger",Emotions.Anger);
@@ -215,9 +220,10 @@ namespace EmotionalEstimation
                     if (File.Exists("analyze_result.txt"))
                         File.Delete("analyze_result.txt");
                     File.AppendAllText("analyze_result.txt",
-                    "filename\tddsPitchDif\tddsPitchDis\tddsIntDif\tddsIntDis\tddsF1Dif\tddsF1Dis\tF2dif\tF2Dis\tF3Dif\tF3Dis\tPitchRange\tIntRange\tPitchVariance\tIntVariance\tPhraseDuration\tSilenceDuration\tCentroid\n");
+                    "filename\tddsPitchDif\tddsPitchDis\tddsIntDif\tddsIntDis\tddsF1Dif\tddsF1Dis\tF2dif\tF2Dis\tF3Dif\tF3Dis\tPitchRange\tIntRange\tPitchVariance\tIntVariance\tPhraseDuration\tSilenceDuration\tCentroid\tF3Variance\tF3Range\n");
                     
                     List<Features> featuresList = new List<Features>();
+                    List<double> targets=new List<double>();
 
 
                     foreach (var dir in dirsToAnalyze.Keys)
@@ -232,15 +238,20 @@ namespace EmotionalEstimation
                             var feature = Analyzer.GetFeatures(sound, dirsToAnalyze[dir]);
                             featuresList.Add(feature);
 
-                            File.AppendAllLines("analyze_result.txt", new string[]{file+"\t"+feature.ToString()}); ;
-
+                            targets.Add(SVMClassifier.GetPositiveNegativeTarget(file));
                             count++;
                             Message_Classifier(count.ToString());
                         }
                     }
+                    var scaled = SVMClassifier.ScaleFeatures(featuresList, -10, 10);
+
+                    for(int i=0;i<targets.Count;i++)
+                        File.AppendAllLines("analyze_result.txt", new string[] { scaled[i].GetSVMString(targets[i].ToString()) });
+
                     classifier = new Classifier();
                     classifier.BuildEngine(featuresList);
                     SaveFeatures(featuresList);
+                    Message_Result("Complete!");
                 });
         }
         private void Message_Classifier(string msg)

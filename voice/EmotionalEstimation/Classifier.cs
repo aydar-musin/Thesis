@@ -273,6 +273,50 @@ namespace EmotionalEstimation
             return result;
         }
 
+        public ActivePassiveEmotionResult ClassifyByActivePassive(Features features)
+        {
+            double active = 0;
+            active += PitchDif.IsHigh(features.PitchDDS.Difference) * FeatureWeights[PitchDif.Name];
+            active += PitchDis.IsLow(features.PitchDDS.Distance) * FeatureWeights[PitchDis.Name];
+            active += F1Dif.IsHigh(features.F1DDS.Difference) * FeatureWeights[F1Dif.Name];
+            active += F1Dis.IsHigh(features.F1DDS.Distance) * FeatureWeights[F1Dis.Name];
+            active += F2Dif.IsHigh(features.F2DDS.Difference) * FeatureWeights[F2Dif.Name];
+            active += F2Dis.IsHigh(features.F2DDS.Distance) * FeatureWeights[F2Dis.Name];
+            active += F3Dif.IsLow(features.F3DDS.Difference) * FeatureWeights[F3Dif.Name];
+            active += F3Dis.IsHigh(features.F3DDS.Distance) * FeatureWeights[F3Dis.Name];
+            active += PitchRange.IsHigh(features.PitchRange) * FeatureWeights[PitchRange.Name];
+            active += IntensityRange.IsHigh(features.IntensityRange) * FeatureWeights[IntensityRange.Name];
+            active += PitchVariance.IsHigh(features.PitchVariance) * FeatureWeights[PitchVariance.Name];
+            active += IntensityVariance.IsHigh(features.IntensityVariance) * FeatureWeights[IntensityVariance.Name];
+            active += PhraseDurationMean.IsLow(features.PhraseDurationMean) * FeatureWeights[PhraseDurationMean.Name];
+            active += Centroid.IsHigh(features.Centroid) * FeatureWeights[Centroid.Name];
+            active += IntDif.IsHigh(features.IntensityDDS.Difference) * FeatureWeights[IntDif.Name];
+            active += IntDis.IsHigh(features.IntensityDDS.Distance) * FeatureWeights[IntDis.Name];
+
+
+            double passive = 0;
+            passive += PitchDif.IsLow(features.PitchDDS.Difference) * FeatureWeights[PitchDif.Name];
+            passive += PitchDis.IsLow(features.PitchDDS.Distance) * FeatureWeights[PitchDis.Name];
+            passive += F1Dif.IsLow(features.F1DDS.Difference) * FeatureWeights[F1Dif.Name];
+            passive += F1Dis.IsLow(features.F1DDS.Distance) * FeatureWeights[F1Dis.Name];
+            passive += F2Dif.IsHigh(features.F2DDS.Difference) * FeatureWeights[F2Dif.Name];
+            passive += F2Dis.IsLow(features.F2DDS.Distance) * FeatureWeights[F2Dis.Name];
+            passive += F3Dif.IsHigh(features.F3DDS.Difference) * FeatureWeights[F3Dif.Name];
+            passive += F3Dis.IsHigh(features.F3DDS.Distance) * FeatureWeights[PitchRange.Name];
+            passive += PitchRange.IsLow(features.PitchRange) * FeatureWeights[PitchRange.Name];
+            passive += IntensityRange.IsLow(features.IntensityRange) * FeatureWeights[IntensityRange.Name];
+            passive += PitchVariance.IsLow(features.PitchVariance) * FeatureWeights[PitchVariance.Name];
+            passive += IntensityVariance.IsLow(features.IntensityVariance) * FeatureWeights[IntensityVariance.Name];
+            passive += PhraseDurationMean.IsHigh(features.PhraseDurationMean) * FeatureWeights[PhraseDurationMean.Name];
+            passive += Centroid.IsLow(features.Centroid) * FeatureWeights[Centroid.Name];
+            passive += IntDif.IsLow(features.IntensityDDS.Difference) * FeatureWeights[IntDif.Name];
+            passive += IntDis.IsLow(features.IntensityDDS.Distance) * FeatureWeights[IntDis.Name];
+
+            ActivePassiveEmotionResult result = new ActivePassiveEmotionResult();
+            result.Active = active;
+            result.Passive = passive;
+            return result;
+        }
         /// <summary>
         /// Edit feature weights. Parameters weights should consist of N numbers, where N is number of training_f_list
         /// </summary>
@@ -320,5 +364,17 @@ namespace EmotionalEstimation
                 return Emotions.Neutral;*/
         }
     }
+    public class ActivePassiveEmotionResult
+    {
+        public double Active;
+        public double Passive;
 
+        public string GetMaxEmotion()
+        {
+            if (Active > Passive)
+                return "Active";
+            else
+                return "Passive";
+        }
+    }
 }

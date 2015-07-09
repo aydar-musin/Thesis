@@ -22,8 +22,9 @@ namespace EmotionalEstimation
 
         public void FromFiles()
         {
-            Active_Passive_Model = SVM.LoadModel("A_P_emotions.model");
-            Positive_Negative_Model = SVM.LoadModel("P_N_emotions.model");
+            Active_Passive_Model = SVM.LoadModel("features_A_P.txt.model");
+            Positive_Negative_Model = SVM.LoadModel("features_P_N.txt.model");
+
         }
         public void Train()
         {
@@ -176,22 +177,59 @@ namespace EmotionalEstimation
             }
             return scaledFeatures;
         }
+        public static List<Features> ScaleFeatures(List<Features> features)
+        {
+            List<Features> scaledFeatures = new List<Features>();
 
+            foreach (var feature in features)
+            {
+                Features scaled_f = new Features();
+                scaled_f.PitchDDS = new DDS();
+                scaled_f.PitchDDS.Difference = Scale(feature.PitchDDS.Difference,GetMinScale(0),GetMaxScale(0) , -1, 1);
+                scaled_f.IntensityDDS = new DDS();
+                scaled_f.IntensityDDS.Distance = Scale(feature.IntensityDDS.Distance, GetMinScale(1), GetMaxScale(1), -1, 1);
+                scaled_f.F1DDS = new DDS();
+                scaled_f.F1DDS.Difference = Scale(feature.F1DDS.Difference, GetMinScale(2), GetMaxScale(2), -1, 1);
+                scaled_f.F3DDS = new DDS();
+                scaled_f.F3DDS.Difference = Scale(feature.F3DDS.Difference, GetMinScale(3), GetMaxScale(3), -1, 1);
+
+                scaled_f.PitchRange = Scale(feature.PitchRange, GetMinScale(4), GetMaxScale(4), -1, 1);
+                scaled_f.IntensityRange = Scale(feature.IntensityRange, GetMinScale(5), GetMaxScale(5), -1, 1);
+                scaled_f.PitchVariance = Scale(feature.PitchVariance, GetMinScale(6), GetMaxScale(6), -1, 1);
+                scaled_f.IntensityVariance = Scale(feature.IntensityVariance, GetMinScale(7), GetMaxScale(7), -1, 1);
+                scaled_f.PhraseDurationMean = Scale(feature.PhraseDurationMean, GetMinScale(8), GetMaxScale(8), -1, 1);
+                scaled_f.Centroid = Scale(feature.Centroid, GetMinScale(9), GetMaxScale(9), -1, 1);
+
+                scaledFeatures.Add(scaled_f);
+
+            }
+            return scaledFeatures;
+        }
         private SVMNode[] GetScaledNodes(Features feature)
         {
-            double[] values = new double[training_set[0].Length];
+            double[] values = new double[10];
 
-            values[0] = Scale(feature.PitchDDS.Difference, training_f_list.Min(f => f.PitchDDS.Difference), training_f_list.Max(f => f.PitchDDS.Difference), -1, 1);
-            values[1] = Scale(feature.IntensityDDS.Distance, training_f_list.Min(f => f.IntensityDDS.Distance), training_f_list.Max(f => f.IntensityDDS.Distance), -1, 1);
-            values[2] = Scale(feature.F1DDS.Difference, training_f_list.Min(f => f.F1DDS.Difference), training_f_list.Max(f => f.F1DDS.Difference), -1, 1);
-            values[3] = Scale(feature.F3DDS.Difference, training_f_list.Min(f => f.F3DDS.Difference), training_f_list.Max(f => f.F3DDS.Difference), -1, 1);
-            values[4] = Scale(feature.PitchRange, training_f_list.Min(f => f.PitchRange), training_f_list.Max(f => f.PitchRange), -1, 1);
-            values[5] = Scale(feature.IntensityRange, training_f_list.Min(f => f.IntensityRange), training_f_list.Max(f => f.IntensityRange), -1, 1);
-            values[6] = Scale(feature.PitchVariance, training_f_list.Min(f => f.PitchVariance), training_f_list.Max(f => f.PitchVariance), -1, 1);
-            values[7] = Scale(feature.IntensityVariance, training_f_list.Min(f => f.IntensityVariance), training_f_list.Max(f => f.IntensityVariance), -1, 1);
-            values[8] = Scale(feature.PhraseDurationMean, training_f_list.Min(f => f.PhraseDurationMean), training_f_list.Max(f => f.PhraseDurationMean), -1, 1);
-            values[9] = Scale(feature.Centroid, training_f_list.Min(f => f.Centroid), training_f_list.Max(f => f.Centroid), -1, 1);
+            //values[0] = Scale(feature.PitchDDS.Difference, training_f_list.Min(f => f.PitchDDS.Difference), training_f_list.Max(f => f.PitchDDS.Difference), -1, 1);
+            //values[1] = Scale(feature.IntensityDDS.Distance, training_f_list.Min(f => f.IntensityDDS.Distance), training_f_list.Max(f => f.IntensityDDS.Distance), -1, 1);
+            //values[2] = Scale(feature.F1DDS.Difference, training_f_list.Min(f => f.F1DDS.Difference), training_f_list.Max(f => f.F1DDS.Difference), -1, 1);
+            //values[3] = Scale(feature.F3DDS.Difference, training_f_list.Min(f => f.F3DDS.Difference), training_f_list.Max(f => f.F3DDS.Difference), -1, 1);
+            //values[4] = Scale(feature.PitchRange, training_f_list.Min(f => f.PitchRange), training_f_list.Max(f => f.PitchRange), -1, 1);
+            //values[5] = Scale(feature.IntensityRange, training_f_list.Min(f => f.IntensityRange), training_f_list.Max(f => f.IntensityRange), -1, 1);
+            //values[6] = Scale(feature.PitchVariance, training_f_list.Min(f => f.PitchVariance), training_f_list.Max(f => f.PitchVariance), -1, 1);
+            //values[7] = Scale(feature.IntensityVariance, training_f_list.Min(f => f.IntensityVariance), training_f_list.Max(f => f.IntensityVariance), -1, 1);
+            //values[8] = Scale(feature.PhraseDurationMean, training_f_list.Min(f => f.PhraseDurationMean), training_f_list.Max(f => f.PhraseDurationMean), -1, 1);
+            //values[9] = Scale(feature.Centroid, training_f_list.Min(f => f.Centroid), training_f_list.Max(f => f.Centroid), -1, 1);
 
+            values[0] = Scale(feature.PitchDDS.Difference, GetMinScale(0), GetMaxScale(0), -1, 1);
+            values[1] = Scale(feature.IntensityDDS.Distance, GetMinScale(1), GetMaxScale(1), -1, 1);
+            values[2] = Scale(feature.F1DDS.Difference, GetMinScale(2), GetMaxScale(2), -1, 1);
+            values[3] = Scale(feature.F3DDS.Difference, GetMinScale(3), GetMaxScale(3), -1, 1);
+            values[4] = Scale(feature.PitchRange, GetMinScale(4), GetMaxScale(4), -1, 1);
+            values[5] = Scale(feature.IntensityRange, GetMinScale(5), GetMaxScale(5), -1, 1);
+            values[6] = Scale(feature.PitchVariance, GetMinScale(6), GetMaxScale(6), -1, 1);
+            values[7] = Scale(feature.IntensityVariance, GetMinScale(7), GetMaxScale(7), -1, 1);
+            values[8] = Scale(feature.PhraseDurationMean, GetMinScale(8), GetMaxScale(8), -1, 1);
+            values[9] = Scale(feature.Centroid, GetMinScale(9), GetMaxScale(9), -1, 1);
             SVMNode[] nodes=new SVMNode[values.Length];
 
             for (int i = 0; i < values.Length; i++)
@@ -227,6 +265,41 @@ namespace EmotionalEstimation
             if (filename.Contains("anger") || filename.Contains("happy"))
                 return 1;
             else return -1;
+        }
+
+        public static double GetMinScale(int index)
+        {
+            switch (index)
+            {
+                case 0: return 0;
+                case 1: return -50;
+                case 2: return 0;
+                case 3: return 0;
+                case 4: return 0;
+                case 5: return 0;
+                case 6: return 0;
+                case 7: return 0;
+                case 8: return 0;
+                case 9: return 0;
+                default: return -1;
+            }
+        }
+        public static double GetMaxScale(int index)
+        {
+            switch (index)
+            {
+                case 0: return 1000;
+                case 1: return 100;
+                case 2: return 1000;
+                case 3: return 1000;
+                case 4: return 1000;
+                case 5: return 50;
+                case 6: return 100000;
+                case 7: return 100;
+                case 8: return 100;
+                case 9: return 1000;
+                default: return -1;
+            }
         }
         
     }

@@ -22,8 +22,9 @@ namespace EmotionalEstimation
         public Form1()
         {
             InitializeComponent();
-            //svm_Classifier = new SVMClassifier();
-            //svm_Classifier.Train();
+            svm_Classifier = new SVMClassifier();
+            svm_Classifier.FromFiles();
+
         }
 
         private void selectFileButton_Click(object sender, EventArgs e)
@@ -34,8 +35,9 @@ namespace EmotionalEstimation
             if (string.IsNullOrEmpty(dialog.FileName))
                 return;
 
-            infoLabel.Text = "Идет обработка...";
+            infoLabel.Text = "Processing...";
             this.Text = dialog.FileName;
+            bool active_passive = ActivePassiveCheckBox.Checked;
 
             Task.Run(() =>
                 {
@@ -46,11 +48,20 @@ namespace EmotionalEstimation
                     if (classifier != null)
                     {
                         var features = Analyzer.GetFeatures(sound,Emotions.Neutral);
-                        var result = classifier.Classify(features);
-                        var svm_result = svm_Classifier.Classify(features);
 
-                        string result_string = string.Format("Anger- {0}{3}Happiness- {1}{3}Sadness- {2}{3}Neutral- {4}{3}{3} SVM: {5}", result.Anger, result.Happiness, result.Sadness,Environment.NewLine,result.Neutral, svm_result.ToString());
-                        Message_Result(result_string);
+                        if (active_passive)
+                        {
+                            var result = classifier.ClassifyByActivePassive(features);
+                            string result_string = string.Format("Active- {0}{2}Passive- {1}{2}", result.Active, result.Passive, Environment.NewLine);
+                            Message_Result(result_string);
+                        }
+                        else
+                        {
+                            var result = classifier.Classify(features);
+
+                            string result_string = string.Format("Anger- {0}{3}Happiness- {1}{3}Sadness- {2}{3}Neutral- {4}{3}{3}", result.Anger, result.Happiness, result.Sadness, Environment.NewLine, result.Neutral);
+                            Message_Result(result_string);
+                        }
                     }
                 });
         }
@@ -172,9 +183,11 @@ namespace EmotionalEstimation
                     Extractor extractor = new Extractor();
                     var sound = extractor.ExtractValues(file);
                     var features=Analyzer.GetFeatures(sound,Emotions.Neutral);
+
                     var emotions_result=classifier.Classify(features);
 
                     var emotion=emotions_result.GetMax();
+                    
 
                     if (emotion==Emotions.Anger)
                         anger_count++;
@@ -238,12 +251,12 @@ namespace EmotionalEstimation
                             var feature = Analyzer.GetFeatures(sound, dirsToAnalyze[dir]);
                             featuresList.Add(feature);
 
-                            targets.Add(SVMClassifier.GetPositiveNegativeTarget(file));
+                            targets.Add(SVMClassifier.GetActivePassiveTarget(file));
                             count++;
                             Message_Classifier(count.ToString());
                         }
                     }
-                    var scaled = SVMClassifier.ScaleFeatures(featuresList, -10, 10);
+                    var scaled = SVMClassifier.ScaleFeatures(featuresList);
 
                     for(int i=0;i<targets.Count;i++)
                         File.AppendAllLines("analyze_result.txt", new string[] { scaled[i].GetSVMString(targets[i].ToString()) });

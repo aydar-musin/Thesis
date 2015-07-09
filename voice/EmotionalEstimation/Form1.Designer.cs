@@ -49,6 +49,7 @@ namespace EmotionalEstimation
             this.ClassificatorGroupBox = new System.Windows.Forms.GroupBox();
             this.ProcessingGroupBox = new System.Windows.Forms.GroupBox();
             this.ResultsBox = new System.Windows.Forms.TextBox();
+            this.ActivePassiveCheckBox = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.chart1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.chart2)).BeginInit();
             this.ClassificatorGroupBox.SuspendLayout();
@@ -157,12 +158,13 @@ namespace EmotionalEstimation
             // 
             // ProcessingGroupBox
             // 
+            this.ProcessingGroupBox.Controls.Add(this.ActivePassiveCheckBox);
             this.ProcessingGroupBox.Controls.Add(this.infoLabel);
             this.ProcessingGroupBox.Controls.Add(this.button1);
             this.ProcessingGroupBox.Controls.Add(this.selectFileButton);
             this.ProcessingGroupBox.Location = new System.Drawing.Point(5, 12);
             this.ProcessingGroupBox.Name = "ProcessingGroupBox";
-            this.ProcessingGroupBox.Size = new System.Drawing.Size(200, 332);
+            this.ProcessingGroupBox.Size = new System.Drawing.Size(221, 332);
             this.ProcessingGroupBox.TabIndex = 9;
             this.ProcessingGroupBox.TabStop = false;
             this.ProcessingGroupBox.Text = "Processing";
@@ -175,6 +177,16 @@ namespace EmotionalEstimation
             this.ResultsBox.ReadOnly = true;
             this.ResultsBox.Size = new System.Drawing.Size(659, 97);
             this.ResultsBox.TabIndex = 10;
+            // 
+            // ActivePassiveCheckBox
+            // 
+            this.ActivePassiveCheckBox.AutoSize = true;
+            this.ActivePassiveCheckBox.Location = new System.Drawing.Point(114, 25);
+            this.ActivePassiveCheckBox.Name = "ActivePassiveCheckBox";
+            this.ActivePassiveCheckBox.Size = new System.Drawing.Size(96, 17);
+            this.ActivePassiveCheckBox.TabIndex = 11;
+            this.ActivePassiveCheckBox.Text = "Active-Passive";
+            this.ActivePassiveCheckBox.UseVisualStyleBackColor = true;
             // 
             // Form1
             // 
@@ -194,6 +206,7 @@ namespace EmotionalEstimation
             this.ClassificatorGroupBox.ResumeLayout(false);
             this.ClassificatorGroupBox.PerformLayout();
             this.ProcessingGroupBox.ResumeLayout(false);
+            this.ProcessingGroupBox.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -211,6 +224,7 @@ namespace EmotionalEstimation
         private System.Windows.Forms.GroupBox ClassificatorGroupBox;
         private System.Windows.Forms.GroupBox ProcessingGroupBox;
         private System.Windows.Forms.TextBox ResultsBox;
+        private System.Windows.Forms.CheckBox ActivePassiveCheckBox;
     }
 }
 

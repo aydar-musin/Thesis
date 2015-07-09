@@ -190,7 +190,7 @@ Firstly, is important to note, that is needed only sound characteristics of voic
 To retrieve sound characteristics using C\# one can use these libraries:
 \begin{itemize}
 	\item NAudio (http://naudio.codeplex.com)
-	\item Bass Audio library (http://naudio.codeplex.com)
+	\item Bass Audio library (http://www.un4seen.com/)
 \end{itemize}
 
 But these libraries provide only sound signal receiving from file or microphone. And to get sound characteristic, for example pitch, we have to implement also Fast Fourier Transform function. Also, we have to implement filtering function. For example, simplest filtering can be implemented as pass-band filter. 
@@ -461,6 +461,17 @@ As noted above data set was divided into two parts: for training and testing. He
 		
 	\end{tabular}
 	\caption{Testing results without neutral emotion.}
+\end{table}
+\begin{table}[h]
+	\centering
+	\begin{tabular}{|l|l|l|}
+		\hline
+		& active & passive\\ \hline
+		active & \textbf{86} & 14\\\hline
+		passive & 18 & \textbf{82}\\\hline
+		
+	\end{tabular}
+	\caption{Testing results with active-passive emotions}
 \end{table}
 As we can see in the Table 5, the most precisely recognized sadness and anger, i.e. passive and active emotions. Table 6 where represented results without neutral emotions, shows that accuracy can be better. And neutral emotion can be deduced from analyzing other emotions values. For example, if values of anger, happiness and sadness are very close, it means that speech is neutral.
 
